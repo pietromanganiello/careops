@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Incident</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fb;
+            margin: 0;
+            padding: 0;
+            color: #1f2937;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 28px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 14px;
+            background-color: #fff;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        button {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #1d4ed8;
+        }
+
+        .top-link {
+            margin-top: 20px;
+            display: inline-block;
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .top-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Edit Incident</h1>
+
+        <form method="POST">
+            <label for="patient_name">Patient Name</label>
+            <input
+                type="text"
+                id="patient_name"
+                name="patient_name"
+                value="{{ incident['patient_name'] }}"
+                required
+            >
+
+            <label for="category">Category</label>
+            <select id="category" name="category" required onchange="updateSubcategories()">
+                <option value="">Select category</option>
+                {% for category in category_map.keys() %}
+                <option value="{{ category }}" {% if incident["category"] == category %}selected{% endif %}>
+                    {{ category }}
+                </option>
+                {% endfor %}
+            </select>
+
+            <label for="subcategory">Subcategory</label>
+            <select id="subcategory" name="subcategory" required></select>
+
+            <label for="status">Status</label>
+            <select id="status" name="status" required>
+                {% for status in status_options %}
+                <option value="{{ status }}" {% if incident["status"] == status %}selected{% endif %}>
+                    {{ status }}
+                </option>
+                {% endfor %}
+            </select>
+
+            <label for="description">Description</label>
+            <textarea id="description" name="description" rows="6" required>{{ incident["description"] }}</textarea>
+
+            <button type="submit">Save Changes</button>
+        </form>
+
+        <a class="top-link" href="/incidents">Back to Logged Incidents</a>
+    </div>
+
+    <script>
+        const categoryMap = {{ category_map | tojson }};
+        const currentSubcategory = {{ incident["subcategory"] | tojson }};
+
+        function updateSubcategories() {
+            const categorySelect = document.getElementById("category");
+            const subcategorySelect = document.getElementById("subcategory");
+            const selectedCategory = categorySelect.value;
+
+            subcategorySelect.innerHTML = '<option value="">Select subcategory</option>';
+
+            if (selectedCategory in categoryMap) {
+                categoryMap[selectedCategory].forEach(function(subcategory) {
+                    const option = document.createElement("option");
+                    option.value = subcategory;
+                    option.text = subcategory;
+
+                    if (subcategory === currentSubcategory) {
+                        option.selected = true;
+                    }
+
+                    subcategorySelect.appendChild(option);
+                });
+            }
+        }
+
+        updateSubcategories();
+    </script>
+</body>
+</html>

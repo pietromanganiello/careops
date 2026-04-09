@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CareOps Incident Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fb;
+            margin: 0;
+            padding: 0;
+            color: #1f2937;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 28px;
+        }
+
+        p.subtitle {
+            color: #6b7280;
+            margin-top: -5px;
+            margin-bottom: 30px;
+        }
+
+        .notice {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .notice.demo {
+            background-color: #fff7ed;
+            border: 1px solid #fdba74;
+            color: #9a3412;
+        }
+
+        .notice.admin {
+            background-color: #ecfdf5;
+            border: 1px solid #86efac;
+            color: #166534;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 14px;
+            background-color: #fff;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        button {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #1d4ed8;
+        }
+
+        .top-links {
+            margin-top: 20px;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .top-link {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .top-link:hover {
+            text-decoration: underline;
+        }
+
+        .admin-link {
+            opacity: 0.45;
+            font-size: 12px;
+        }
+
+        .admin-link:hover {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CareOps Incident Form</h1>
+        <p class="subtitle">Log and track care operations incidents in a structured way.</p>
+
+        {% if is_admin %}
+            <div class="notice admin">Admin mode active. Submissions are live and will be saved.</div>
+        {% else %}
+            <div class="notice demo">Demo mode. Visitors can view and test the form, but submissions are not saved.</div>
+        {% endif %}
+
+        {% if demo_message %}
+            <div class="notice demo">{{ demo_message }}</div>
+        {% endif %}
+
+        <form method="POST">
+            <label for="patient_name">Patient Name</label>
+            <input type="text" id="patient_name" name="patient_name" required>
+
+            <label for="category">Category</label>
+            <select id="category" name="category" required onchange="updateSubcategories()">
+                <option value="">Select category</option>
+                {% for category in category_map.keys() %}
+                <option value="{{ category }}">{{ category }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="subcategory">Subcategory</label>
+            <select id="subcategory" name="subcategory" required>
+                <option value="">Select subcategory</option>
+            </select>
+
+            <label for="description">Description</label>
+            <textarea id="description" name="description" rows="6" required></textarea>
+
+            <button type="submit">
+                {% if is_admin %}Submit Incident{% else %}Test Demo Form{% endif %}
+            </button>
+        </form>
+
+        <div class="top-links">
+            <a class="top-link" href="/incidents">View Logged Incidents</a>
+
+            {% if is_admin %}
+                <a class="top-link" href="/logout">Logout</a>
+            {% else %}
+                <a class="top-link admin-link" href="/login">Admin</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        const categoryMap = {{ category_map | tojson }};
+
+        function updateSubcategories() {
+            const categorySelect = document.getElementById("category");
+            const subcategorySelect = document.getElementById("subcategory");
+            const selectedCategory = categorySelect.value;
+
+            subcategorySelect.innerHTML = '<option value="">Select subcategory</option>';
+
+            if (selectedCategory in categoryMap) {
+                categoryMap[selectedCategory].forEach(function(subcategory) {
+                    const option = document.createElement("option");
+                    option.value = subcategory;
+                    option.text = subcategory;
+                    subcategorySelect.appendChild(option);
+                });
+            }
+        }
+    </script>
+</body>
+</html>

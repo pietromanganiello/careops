@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Logged Incidents</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fb;
+            margin: 0;
+            padding: 0;
+            color: #1f2937;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 30px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 28px;
+        }
+
+        .top-links {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .top-link {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .top-link:hover {
+            text-decoration: underline;
+        }
+
+        .admin-link {
+            opacity: 0.45;
+            font-size: 12px;
+        }
+
+        .admin-link:hover {
+            opacity: 1;
+        }
+
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: end;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 180px;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        select {
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+        }
+
+        button {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #1d4ed8;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            border: 1px solid #e5e7eb;
+            padding: 12px;
+            text-align: left;
+            vertical-align: top;
+            font-size: 14px;
+        }
+
+        th {
+            background-color: #f3f4f6;
+        }
+
+        tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+
+        .action-cell {
+            white-space: nowrap;
+        }
+
+        .action-link {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .action-link:hover {
+            text-decoration: underline;
+        }
+
+        .inline-form {
+            display: inline;
+        }
+
+        .archive-btn {
+            background-color: #6b7280;
+            margin-left: 4px;
+        }
+
+        .archive-btn:hover {
+            background-color: #4b5563;
+        }
+
+        .demo-note {
+            margin-bottom: 18px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            background-color: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1d4ed8;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Logged Incidents</h1>
+
+        <div class="top-links">
+            <a class="top-link" href="/">Incident Form</a>
+
+            {% if is_admin %}
+                <a class="top-link" href="/logout">Logout</a>
+            {% else %}
+                <a class="top-link admin-link" href="/login">Admin</a>
+            {% endif %}
+        </div>
+
+        {% if not is_admin %}
+            <div class="demo-note">View-only mode. Admin controls are hidden for public visitors.</div>
+        {% endif %}
+
+        <form method="GET" action="/incidents" class="filter-bar">
+            <div class="filter-group">
+                <label>Status</label>
+                <select name="status">
+                    <option value="All" {% if status_filter == "All" %}selected{% endif %}>All</option>
+                    <option value="Open" {% if status_filter == "Open" %}selected{% endif %}>Open</option>
+                    <option value="In review" {% if status_filter == "In review" %}selected{% endif %}>In review</option>
+                    <option value="Closed" {% if status_filter == "Closed" %}selected{% endif %}>Closed</option>
+                    <option value="Duplicated" {% if status_filter == "Duplicated" %}selected{% endif %}>Duplicated</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>Category</label>
+                <select name="category">
+                    <option value="All" {% if category_filter == "All" %}selected{% endif %}>All</option>
+                    <option value="Medication" {% if category_filter == "Medication" %}selected{% endif %}>Medication</option>
+                    <option value="Skin / wound" {% if category_filter == "Skin / wound" %}selected{% endif %}>Skin / wound</option>
+                    <option value="Falls" {% if category_filter == "Falls" %}selected{% endif %}>Falls</option>
+                    <option value="Patient flow delay" {% if category_filter == "Patient flow delay" %}selected{% endif %}>Patient flow delay</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>Archived</label>
+                <select name="archived">
+                    <option value="hide" {% if archived_filter == "hide" %}selected{% endif %}>Hide archived</option>
+                    <option value="only" {% if archived_filter == "only" %}selected{% endif %}>Show archived only</option>
+                    <option value="all" {% if archived_filter == "all" %}selected{% endif %}>Show all</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <button type="submit">Apply Filters</button>
+            </div>
+        </form>
+
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Patient Name</th>
+                <th>Category</th>
+                <th>Subcategory</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Created At</th>
+                <th>Updated At</th>
+                <th>Archived</th>
+                {% if is_admin %}
+                    <th>Action</th>
+                {% endif %}
+            </tr>
+
+            {% for incident in incidents %}
+            <tr>
+                <td>{{ incident["id"] }}</td>
+                <td>{{ incident["patient_name"] }}</td>
+                <td>{{ incident["category"] }}</td>
+                <td>{{ incident["subcategory"] }}</td>
+                <td>{{ incident["description"] }}</td>
+                <td>{{ incident["status"] }}</td>
+                <td>{{ incident["created_at"] }}</td>
+                <td>{{ incident["updated_at"] }}</td>
+                <td>{{ "Yes" if incident["archived"] == 1 else "No" }}</td>
+
+                {% if is_admin %}
+                <td class="action-cell">
+                    <a class="action-link" href="/edit/{{ incident['id'] }}">Edit</a>
+
+                    {% if incident["archived"] == 0 %}
+                    <form method="POST" action="/archive/{{ incident['id'] }}" class="inline-form">
+                        <button class="archive-btn" type="submit">Archive</button>
+                    </form>
+                    {% else %}
+                    <form method="POST" action="/unarchive/{{ incident['id'] }}" class="inline-form">
+                        <button class="archive-btn" type="submit">Unarchive</button>
+                    </form>
+                    {% endif %}
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</body>
+</html>
