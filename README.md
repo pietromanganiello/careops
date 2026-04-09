@@ -4,6 +4,33 @@ CareOps is a lightweight care operations and governance tracking system built to
 
 It started as a practical incident logging app and is being developed further as a broader operational and governance platform for care settings.
 
+## Project Overview
+
+### Incident Form
+Structured form to log care-related incidents with category and subcategory selection.
+
+![Incident Form](screenshots/incident-form.png)
+
+### Logged Incidents Dashboard
+View, filter, and manage incidents with status tracking, timestamps, and archive functionality.
+
+![Incidents Table](screenshots/incidents-table.png)
+
+### Edit Incident
+Update incident details including category, subcategory, status, and description.
+
+![Edit Incident](screenshots/edit-incident.png)
+
+### Admin Access
+Secure admin login to control editing, archiving, and data management.
+
+![Admin Login](screenshots/admin-login.png)
+
+### Docker Deployment and Logs
+Application fully containerised and running via Docker Compose, with container status and live request logs visible.
+
+![Docker Terminal](screenshots/docker-terminal.png)
+
 ## Purpose
 
 The aim of CareOps is to provide a simple but structured system to:
