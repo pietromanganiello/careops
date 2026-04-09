@@ -6,6 +6,15 @@ It started as a practical incident logging app and is being developed further as
 
 ## Project Overview
 
+## Live Demo
+
+You can access the live version here:
+
+http://72.61.201.12:8080
+
+- Public users can explore the interface and test the form in demo mode
+- Admin functionality is protected
+
 ### Incident Form
 Structured form to log care-related incidents with category and subcategory selection.
 
