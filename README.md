@@ -4,7 +4,10 @@ CareOps is a lightweight care operations and governance tracking system built to
 
 It started as a practical incident logging app and is being developed further as a broader operational and governance platform for care settings.
 
+
 ## Project Overview
+
+Below are key views of the application and deployment environment:
 
 ## Live Demo
 
@@ -110,7 +113,7 @@ This project is also part of my DevOps learning journey, where I am building rea
 - VPS deployment
 - Environment variables via `.env`
 
-## Deployment Setup
+## Architecture and Deployment
 
 CareOps is containerised with Docker and can be run using Docker Compose.
 
